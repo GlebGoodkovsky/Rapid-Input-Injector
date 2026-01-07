@@ -77,7 +77,17 @@ def main():
             payload_list = [x.strip() for x in raw_list.split(',')]
         
         elif mode == '3':
-            print(f"\n{C.MAGENTA}[INFO] Fuzzing mode selected. Random strings will be generated.{C.END}")
+            print(f"\n{C.MAGENTA}[INFO] Fuzzing mode selected.{C.END}")
+            print(f"{C.BLUE}[INPUT] Enter length of random strings (Max 100, Default 16):{C.END}")
+            len_in = input(f"{C.BOLD}> {C.END}")
+            
+            # Logic: Default to 16, Enforce Max 100
+            val = int(len_in) if len_in else 16
+            if val > 100:
+                print(f"{C.YELLOW}[WARN] Length exceeds limit. Clamping to 100.{C.END}")
+                fuzz_length = 100
+            else:
+                fuzz_length = val
 
         else:
             print(f"{C.RED}Invalid selection. Defaulting to Static.{C.END}")
@@ -124,7 +134,8 @@ def main():
             elif mode == '2':
                 current_payload = random.choice(payload_list)
             elif mode == '3':
-                current_payload = get_random_string(16)
+                length = vars().get('fuzz_length', 16) 
+                current_payload = get_random_string(length)
 
             # 3. Inject
             pyautogui.write(current_payload)
