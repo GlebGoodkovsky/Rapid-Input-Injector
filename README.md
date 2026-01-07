@@ -1,5 +1,11 @@
 # Rapid Input Injector
 
+---
+
+![1](assets/1.png)
+
+---
+
 A lightweight, terminal-based automation tool designed for rapid text injection. Built with Python and `pyautogui`, it features a custom TUI (Text User Interface) with gradient aesthetics and zero restriction logic.
 
 ---
