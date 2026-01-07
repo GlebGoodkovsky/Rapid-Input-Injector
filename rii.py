@@ -78,16 +78,26 @@ def main():
         
         elif mode == '3':
             print(f"\n{C.MAGENTA}[INFO] Fuzzing mode selected.{C.END}")
-            print(f"{C.BLUE}[INPUT] Enter length of random strings (Max 100, Default 16):{C.END}")
-            len_in = input(f"{C.BOLD}> {C.END}")
             
-            # Logic: Default to 16, Enforce Max 100
-            val = int(len_in) if len_in else 16
-            if val > 100:
-                print(f"{C.YELLOW}[WARN] Length exceeds limit. Clamping to 100.{C.END}")
-                fuzz_length = 100
-            else:
-                fuzz_length = val
+            # 1. Ask for Min
+            print(f"{C.BLUE}[INPUT] Min Length (Default 4):{C.END}")
+            min_in = input(f"{C.BOLD}> {C.END}")
+            fuzz_min = int(min_in) if min_in else 4
+            if fuzz_min < 1: fuzz_min = 1
+
+            # 2. Ask for Max
+            print(f"{C.BLUE}[INPUT] Max Length (Limit 100, Default 16):{C.END}")
+            max_in = input(f"{C.BOLD}> {C.END}")
+            fuzz_max = int(max_in) if max_in else 16
+
+            # 3. Safety Logic
+            if fuzz_max > 100:
+                print(f"{C.YELLOW}[WARN] Max > 100. Clamping to 100.{C.END}")
+                fuzz_max = 100
+            
+            if fuzz_min > fuzz_max:
+                print(f"{C.YELLOW}[WARN] Min > Max. Swapping values.{C.END}")
+                fuzz_min, fuzz_max = fuzz_max, fuzz_min
 
         else:
             print(f"{C.RED}Invalid selection. Defaulting to Static.{C.END}")
@@ -134,8 +144,13 @@ def main():
             elif mode == '2':
                 current_payload = random.choice(payload_list)
             elif mode == '3':
-                length = vars().get('fuzz_length', 16) 
-                current_payload = get_random_string(length)
+                # Get vars securely
+                f_min = vars().get('fuzz_min', 4)
+                f_max = vars().get('fuzz_max', 16)
+                
+                # Pick a random length for THIS specific message
+                curr_len = random.randint(f_min, f_max)
+                current_payload = get_random_string(curr_len)
 
             # 3. Inject
             pyautogui.write(current_payload)
